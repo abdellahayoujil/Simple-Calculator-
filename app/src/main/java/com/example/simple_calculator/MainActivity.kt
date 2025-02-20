@@ -61,7 +61,8 @@ fun CalculatorApp() {
         )
 
         buttons.forEach { row ->
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Row(modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly) {
                 row.forEach { button ->
                     if (button.isNotEmpty()) {
                         CalculatorButton(button, onClick = {
@@ -78,10 +79,12 @@ fun CalculatorApp() {
                                 }
                                 "+/-" -> {
                                     input = if (input.startsWith("-")) input.substring(1) else "-$input"
+                                    result = if (result.startsWith("-")) result.substring(1) else "-$result"
                                 }
                                 "%" -> {
                                     try {
                                         input = (input.toDouble() / 100).toString()
+                                        result = (result.toDouble() / 100).toString()
                                     } catch (e: Exception) {
                                         result = "Error"
                                     }
@@ -91,14 +94,17 @@ fun CalculatorApp() {
                                         firstNumber = input
                                         operator = button
                                         input = "0"
+                                    } else if (result.isNotEmpty()) {
+                                        firstNumber = result
+                                        operator = button
+                                        input = "0"
                                     }
                                 }
                                 "=" -> {
                                     if (firstNumber.isNotEmpty() && operator.isNotEmpty()) {
                                         try {
-                                            val secondNumber = input
                                             val num1 = firstNumber.toDouble()
-                                            val num2 = secondNumber.toDouble()
+                                            val num2 = input.toDouble()
                                             result = when (operator) {
                                                 "+" -> (num1 + num2).toString()
                                                 "-" -> (num1 - num2).toString()
@@ -120,9 +126,13 @@ fun CalculatorApp() {
                                     }
                                 }
                                 else -> {
-                                    input = if (input == "0") button else input + button
+                                    if (input == "0" || input == result) {input = button
+                                    } else {
+                                        input += button
+                                    }
                                 }
                             }
+
                         })
                     }
                 }
